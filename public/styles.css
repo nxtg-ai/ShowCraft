@@ -1377,3 +1377,63 @@ dialog::backdrop {
   flex-direction: column;
   gap: 4px;
 }
+
+.aistudio-callout {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.aistudio-callout-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+.aistudio-badge {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #a5b4fc;
+  letter-spacing: 0.04em;
+}
+
+.aistudio-link-btn {
+  text-decoration: none;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.sdk-showcase-details {
+  background: var(--bg-app);
+  border: 1px solid var(--border-hairline);
+  border-radius: 5px;
+  padding: 7px 10px;
+}
+
+.sdk-showcase-details summary {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.sdk-code-preview {
+  margin: 8px 0 2px;
+  padding: 8px;
+  background: rgba(9, 9, 11, 0.75);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #c7d2fe;
+  overflow-x: auto;
+  line-height: 1.45;
+}

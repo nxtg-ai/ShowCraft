@@ -27,6 +27,8 @@
         </svg>
       </div>
       <div class="project-breadcrumb">
+        <span class="breadcrumb-org">nxtg.ai</span>
+        <span class="breadcrumb-sep">/</span>
         <span class="breadcrumb-org">showcraft</span>
         <span class="breadcrumb-sep">/</span>
         <span class="breadcrumb-file" id="projectFileName">vanguard-deploy.scraft</span>
@@ -537,13 +539,41 @@
       </div>
 
       <p class="dialog-desc">
-        Connect <code>gemini-3.8-flash</code> via the <code>@google/genai</code> Interactions API to synthesize structured camera focal scales, subtitle pacing, and hotspot labels from raw DOM telemetry.
+        Connect <code>gemini-3.8-flash</code> &amp; <code>gemini-3.8-flash-tts</code> via the official <code>@google/genai</code> Interactions API (<code>client.interactions.create</code>) to synthesize camera zoom scales, kinetic subtitles, and studio voiceovers.
       </p>
 
+      <div class="aistudio-callout">
+        <div class="aistudio-callout-text">
+          <span class="aistudio-badge">GOOGLE AI STUDIO</span>
+          <span>Need an API key? Create a free Gemini key in 10 seconds on Google AI Studio.</span>
+        </div>
+        <a
+          href="https://aistudio.google.com/apikey"
+          target="_blank"
+          rel="noopener"
+          class="btn-primary-pro aistudio-link-btn"
+          id="btnGetGoogleAiKey"
+        >
+          <span>Get Free Key at Google AI Studio</span>
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M4.5 11.5L11.5 4.5M11.5 4.5H5.5M11.5 4.5V10.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
       <div class="field-group">
-        <label class="field-label" for="geminiKeyInput">GEMINI_API_KEY (Session Memory Only)</label>
+        <label class="field-label" for="geminiKeyInput">GEMINI_API_KEY (Stored Strictly in Session Memory)</label>
         <input type="password" id="geminiKeyInput" class="pro-input mono-input" placeholder="AIzaSy..." autocomplete="off" />
       </div>
+
+      <details class="sdk-showcase-details">
+        <summary>View @google/genai Interactions API Reference Implementation</summary>
+        <pre class="sdk-code-preview"><code>const interaction = await client.interactions.create({
+  model: 'gemini-3.8-flash',
+  input: telemetryPrompt,
+  response_format: [{ type: 'text', mime_type: 'application/json', schema: DIRECTOR_SCHEMA }]
+});</code></pre>
+      </details>
 
       <div class="dialog-footer">
         <span class="dialog-tip">Fallback: Local deterministic kinematic solver</span>

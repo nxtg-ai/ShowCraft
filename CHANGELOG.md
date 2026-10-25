@@ -4,6 +4,13 @@ All notable changes to **Showcraft** are documented in this file.
 
 ---
 
+## [3.1.0] — 2026-10-25
+### Added
+- **Google AI Studio 1-Click Key Onboarding & `@google/genai` Code Preview (`#aiConfigDialog`):** Added direct 1-click link to Google AI Studio (`aistudio.google.com/apikey`) and inline `client.interactions.create` reference code inside the Gemini 3.8 Flash configuration modal.
+- **Gemini Interactions API & Chrome Web Platform Reference Documentation ([`README.md`](./README.md)):** Added copy-pasteable `gemini-3.8-flash` and `gemini-3.8-flash-tts` Interactions API architecture examples.
+
+---
+
 ## [3.0.0] — 2026-10-25
 ### Added
 - **Showcraft Cloud Pro & License Activation (`#proUpgradeDialog`, `/api/pro-checkout`):** Added Cloud Pro tier (`$19/mo` Pro · `$79/mo` Teams) with license key verification (`SCRAFT-PRO-XXXXXX`) unlocking watermark-free white-label exports and custom short permalinks.

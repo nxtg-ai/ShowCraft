@@ -43,6 +43,58 @@ npm test
 
 ---
 
+## Google Gemini (`@google/genai`) & Modern Chrome Web Platform Showcase
+
+Built by **[NXTG.ai](https://github.com/nxtg-ai)**, Showcraft serves as an open-source reference architecture for the **Google Gemini Interactions API (`@google/genai` `^2.29.1`)** and modern **Baseline Chrome Web Platform APIs**:
+
+### 1. Structured Camera Choreography via `gemini-3.8-flash` (`client.interactions.create`)
+Instead of legacy `generateContent` calls, [`server.mjs`](./server.mjs) uses the unified **Interactions API** with JSON Schema enforcement (`response_format`) to convert raw DOM click telemetry into focal zoom scales and timecoded captions:
+
+```javascript
+import { GoogleGenAI } from '@google/genai';
+
+const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const interaction = await client.interactions.create({
+  model: 'gemini-3.8-flash',
+  input: telemetryPrompt,
+  response_format: [
+    {
+      type: 'text',
+      mime_type: 'application/json',
+      schema: DIRECTOR_SCHEMA,
+    },
+  ],
+});
+
+const directed = JSON.parse(interaction.output_text);
+```
+
+### 2. Studio Voiceover Synthesis via `gemini-3.8-flash-tts` (`speech_metadata`)
+Showcraft synthesizes expressive product launch voiceovers with `<short pause>` pacing tags and muxes the decoded WAV buffer directly with `canvas.captureStream(60)` into a single `VP9/Opus` `.webm` container:
+
+```javascript
+const interaction = await client.interactions.create({
+  model: 'gemini-3.8-flash-tts',
+  input: `<speech_metadata style="crisp, confident studio narrator">${scriptText}</speech_metadata>`,
+  response_format: { type: 'audio' },
+  generation_config: {
+    speech_config: {
+      voice_config: { prebuilt_voice_config: { voice_name: 'Kore' } },
+    },
+  },
+});
+```
+> **Get a Free Gemini API Key:** You can generate a free key in 10 seconds at **[Google AI Studio (`aistudio.google.com/apikey`)](https://aistudio.google.com/apikey)** and paste it into the **Gemini 3.8 Flash** modal inside Showcraft Studio.
+
+### 3. Zero-Framework Baseline Chrome Web Platform Primitives
+- **Declarative Top-Layer Dialogs:** `<dialog closedby="any">` paired with `@starting-style` and `transition-behavior: allow-discrete`.
+- **Adaptive NLE Color-Scheme Engine:** CSS `color-scheme: light dark` and `light-dark()` tokens with luminance-isolated canvas wells.
+- **Native CSS `progress()` Range Sliders:** Zero-JS track fill computation with cross-engine `@supports` fallbacks.
+- **Manifest V3 Extension (`./extension`):** Ephemeral-safe `chrome.storage.session` state locking and `requestAnimationFrame`-batched DOM telemetry capture.
+
+---
+
 ## Documentation
 
 - **[User Guide (`docs/USER_GUIDE.md`)](./docs/USER_GUIDE.md)** — Complete walkthrough of recording, timeline editing, live screen capture, voiceover synthesis, and exporting.

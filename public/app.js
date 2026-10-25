@@ -924,6 +924,13 @@ btnOpenAiDialog.addEventListener('click', () => {
   aiConfigDialog.showModal();
 });
 
+const btnGetGoogleAiKey = document.getElementById('btnGetGoogleAiKey');
+if (btnGetGoogleAiKey) {
+  btnGetGoogleAiKey.addEventListener('click', () => {
+    recordViralEvent('aistudio_referrals');
+  });
+}
+
 if (workspaceSchemeSelect) {
   const metaScheme = document.querySelector('meta[name="color-scheme"]');
   const currentMeta = metaScheme?.content || 'dark';

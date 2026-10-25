@@ -24,6 +24,7 @@ const viralTelemetry = {
   studio_remixes: 6,
   exports_webm: 4,
   pro_checkouts: 0,
+  aistudio_referrals: 5,
   lastUpdated: new Date().toISOString(),
 };
 
