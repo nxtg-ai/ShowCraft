@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Showcraft — Interactive Demo & Motion Recorder",
+  "version": "1.4.0",
+  "description": "Record clicks on any webpage and convert them into a 60fps auto-zoomed launch video and playable interactive demo in Showcraft Studio.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "action": {
+    "default_title": "Showcraft — Click to Record Tab Telemetry"
+  },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  }
+}

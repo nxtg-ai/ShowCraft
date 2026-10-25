@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    try {
+      document.querySelector('meta[name="color-scheme"]').content =
+        localStorage.getItem('color-scheme') ?? 'dark';
+    } catch {}
+  </script>
+  <title>Showcraft — Motion &amp; Interactive Product Demo Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <!-- TOP NLE UTILITY BAR (44px) -->
+  <header class="app-menubar">
+    <div class="menubar-left">
+      <div class="logo-mark" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="1.5" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M6.25 5.25L10.75 8L6.25 10.75V5.25Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="project-breadcrumb">
+        <span class="breadcrumb-org">showcraft</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-file" id="projectFileName">vanguard-deploy.scraft</span>
+      </div>
+      <span class="telemetry-tag" id="statDeadAir">IDLE -64% (4.2s CUT)</span>
+    </div>
+
+    <div class="menubar-center">
+      <div class="segmented-control" role="tablist" aria-label="Viewport Mode">
+        <button type="button" role="tab" aria-selected="true" class="seg-btn active" id="tabCinemaMode">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1.5" y="3" width="13" height="10" rx="1.5"/>
+            <path d="M6.5 6.25L10 8L6.5 9.75V6.25Z" fill="currentColor" stroke="none"/>
+          </svg>
+          <span>Cinema Compositor</span>
+          <kbd>1</kbd>
+        </button>
+        <button type="button" role="tab" aria-selected="false" class="seg-btn" id="tabPlayableMode">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8" cy="8" r="5.5"/>
+            <circle cx="8" cy="8" r="2" fill="currentColor" stroke="none"/>
+          </svg>
+          <span>Interactive Sandbox</span>
+          <kbd>2</kbd>
+        </button>
+      </div>
+    </div>
+
+    <div class="menubar-right">
+      <button type="button" class="btn-tool studio-only" id="btnOpenAiDialog" title="Configure Gemini 3.8 Flash AI Director">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 1.75V4.25M8 11.75V14.25M1.75 8H4.25M11.75 8H14.25M3.58 3.58L5.35 5.35M10.65 10.65L12.42 12.42M12.42 3.58L10.65 5.35M5.35 10.65L3.58 12.42" stroke-linecap="round"/>
+        </svg>
+        <span id="statDirectorModel">Gemini 3.8 Flash</span>
+      </button>
+
+      <button type="button" class="btn-tool studio-only" id="btnExportVideo">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 2.5V10.5M8 10.5L5 7.5M8 10.5L11 7.5M2.5 13H13.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Export WebM</span>
+        <kbd>⌘E</kbd>
+      </button>
+
+      <button type="button" class="btn-primary-pro studio-only" id="btnOpenShareDialog">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M6.5 9.5L9.5 6.5M5.5 11.5L4.2 12.8C3.2 13.8 1.6 13.8 0.6 12.8M10.5 4.5L11.8 3.2C12.8 2.2 14.4 2.2 15.4 3.2" stroke-linecap="round"/>
+          <rect x="2" y="2" width="12" height="12" rx="2.5"/>
+        </svg>
+        <span>Publish Artifact</span>
+      </button>
+
+      <button type="button" class="btn-primary-pro embed-only" id="btnRemixInStudio" hidden>
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Remix in Showcraft Studio</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN NLE WORKBENCH -->
+  <div class="nle-workbench">
+    <!-- UPPER 3-PANE AREA -->
+    <div class="nle-upper">
+      <!-- LEFT DOCK: SOURCE CAPTURE & TELEMETRY STREAM -->
+      <aside class="dock-panel dock-left" aria-label="Telemetry Capture Source">
+        <div class="dock-section-header">
+          <span class="section-title">SOURCE TARGET</span>
+          <select id="presetSelector" class="pro-select" aria-label="Target application preset">
+            <option value="ai-agent">vanguard-cloud.dev</option>
+            <option value="stripe-rev">pulse-analytics.io</option>
+            <option value="sql-copilot">tabsnap-local.dev</option>
+          </select>
+        </div>
+
+        <div class="capture-bar">
+          <button type="button" class="btn-record-pro" id="btnRecordToggle">
+            <span class="rec-indicator"></span>
+            <span id="recordBtnLabel">Record Telemetry</span>
+            <kbd>R</kbd>
+          </button>
+          <button type="button" class="btn-tool btn-full" id="btnCaptureScreen" style="margin-top: 6px;">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="1.75" y="2.75" width="12.5" height="8.5" rx="1.5"/>
+              <path d="M5.5 13.5H10.5M8 11.25V13.5" stroke-linecap="round"/>
+            </svg>
+            <span id="captureScreenLabel">Capture Live Screen / Tab</span>
+          </button>
+        </div>
+
+        <div class="source-stage-container">
+          <div class="source-stage-meta">
+            <span class="mono-label">DOM INSTRUMENTATION</span>
+            <span class="rec-status-pill" id="liveRecBadge" hidden>REC 60Hz</span>
+          </div>
+
+          <!-- LIVE INTERACTIVE MINI-APP TARGET -->
+          <div class="sandbox-viewport" id="sandboxViewport">
+            <div class="sandbox-chrome">
+              <div class="chrome-dots"><span></span><span></span><span></span></div>
+              <span class="chrome-url" id="sandboxUrlBar">app.vanguard-cloud.dev/deploy</span>
+            </div>
+            <div class="sandbox-body" id="sandboxStage"></div>
+          </div>
+          <p class="micro-caption">
+            Click elements inside the target above while recording. Idle gaps &gt;800ms are excised and converted into critically damped camera springs.
+          </p>
+        </div>
+
+        <div class="dock-section-header border-top">
+          <span class="section-title">CAPTURED VECTORS</span>
+          <span class="mono-count" id="statKeyframes">4 NODES</span>
+        </div>
+
+        <div class="vector-list" id="keyframeList" role="list"></div>
+      </aside>
+
+      <!-- CENTER STAGE: 60FPS HARDWARE CANVAS & PLAYABLE OVERLAY -->
+      <main class="center-stage">
+        <div class="stage-hud-top">
+          <div class="hud-pill">
+            <span class="hud-dot"></span>
+            <span id="hudResolutionText">1920 × 1160 · 16:10 · 60 FPS</span>
+          </div>
+          <div class="hud-pill mono-readout" id="hudZoomReadout">CAM 1.00× · X 0.50 Y 0.50</div>
+        </div>
+
+        <div class="canvas-frame-outer">
+          <div class="player-stage-wrap">
+            <canvas id="cinemaCanvas" width="960" height="580"></canvas>
+
+            <!-- PLAYABLE HOTSPOT OVERLAY -->
+            <div class="playable-overlay" id="playableOverlay" hidden>
+              <div class="playable-hud-bar">
+                <span class="hud-badge">INTERACTIVE SANDBOX</span>
+                <span id="playableBannerText">Click the highlighted DOM vector to advance state</span>
+                <span class="mono-step" id="playableStepCounter">01 / 04</span>
+              </div>
+              <button type="button" class="hotspot-target" id="hotspotTarget">
+                <span class="hotspot-ring"></span>
+                <span class="hotspot-crosshair"></span>
+                <span class="hotspot-tooltip" id="hotspotTooltip">Execute Action</span>
+              </button>
+            </div>
+
+            <!-- SUBTLE PRO ATTRIBUTION TRIGGER -->
+            <button type="button" class="viral-watermark" id="viralBadgeBtn" title="Toggle Interactive Sandbox Mode">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+                <polygon points="5,3 13,8 5,13" fill="currentColor" stroke="none"/>
+              </svg>
+              <span id="viralBadgeText">Interactive Artifact · Showcraft</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TRANSPORT CONTROL BAR -->
+        <div class="stage-transport">
+          <div class="transport-left">
+            <button type="button" class="btn-transport" id="btnPlayPause" aria-label="Play or Pause">
+              <svg id="iconPause" width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <rect x="3.5" y="2.5" width="3.2" height="11" rx="0.8"/>
+                <rect x="9.3" y="2.5" width="3.2" height="11" rx="0.8"/>
+              </svg>
+              <svg id="iconPlay" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" hidden>
+                <path d="M4 2.5L13 8L4 13.5V2.5Z"/>
+              </svg>
+              <span id="playPauseLabel">Pause</span>
+            </button>
+            <span class="timecode-display" id="timeReadout">00:00.0 / 00:06.0</span>
+          </div>
+
+          <div class="transport-scrubber">
+            <input type="range" id="scrubberInput" min="0" max="1000" value="0" aria-label="Playhead position" />
+          </div>
+
+          <div class="transport-right">
+            <span class="kbd-hint"><kbd>Space</kbd> Play/Pause</span>
+          </div>
+        </div>
+      </main>
+
+      <!-- RIGHT DOCK: CAMERA OPTICS, ENVIRONMENT & AI SCRIPT INSPECTOR -->
+      <aside class="dock-panel dock-right" aria-label="Camera and AI Inspector">
+        <div class="dock-section-header">
+          <span class="section-title">CAMERA OPTICS &amp; SPRINGS</span>
+          <span class="mono-count">CRITICALLY DAMPED</span>
+        </div>
+
+        <div class="inspector-group">
+          <div class="inspector-row">
+            <label for="aspectRatioSelect">Stage Aspect Format</label>
+            <select id="aspectRatioSelect" class="pro-select">
+              <option value="960x580">16:10 · Studio Widescreen (960×580)</option>
+              <option value="960x540">16:9 · X / YouTube HD (960×540)</option>
+              <option value="540x675">4:5 · LinkedIn / Feed Portrait (540×675)</option>
+              <option value="640x640">1:1 · Product Hunt Square (640×640)</option>
+            </select>
+          </div>
+
+          <div class="inspector-row">
+            <label for="zoomSelect">Focal Magnification</label>
+            <select id="zoomSelect" class="pro-select">
+              <option value="1.65">1.65× Studio Telephoto</option>
+              <option value="1.35">1.35× Wide Contextual</option>
+              <option value="1.95">1.95× Macro Detail</option>
+            </select>
+          </div>
+
+          <div class="inspector-row">
+            <label for="backdropSelect">Canvas Matte (Export Stage)</label>
+            <select id="backdropSelect" class="pro-select">
+              <optgroup label="Dark Cinema Mattes">
+                <option value="obsidian">Obsidian Carbon (Dark)</option>
+                <option value="hyperion">Deep Cobalt Slate (Dark)</option>
+                <option value="emerald">Terminal Graphite (Dark)</option>
+                <option value="sunset">Warm Titanium (Dark)</option>
+              </optgroup>
+              <optgroup label="High-Key Daylight Mattes">
+                <option value="alabaster">Alabaster Daylight (Light)</option>
+                <option value="limestone">Editorial Warm Paper (Light)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="inspector-row">
+            <label for="workspaceSchemeSelect">Workbench UI Chrome</label>
+            <select id="workspaceSchemeSelect" class="pro-select">
+              <option value="dark">Dark NLE (Color-Accurate Default)</option>
+              <option value="light">Daylight Zinc Chrome</option>
+              <option value="light dark">Follow OS Preference</option>
+            </select>
+          </div>
+
+          <div class="spring-metrics">
+            <div class="spring-cell">
+              <span class="cell-lbl">STIFFNESS</span>
+              <span class="cell-val">280 N/m</span>
+            </div>
+            <div class="spring-cell">
+              <span class="cell-lbl">DAMPING</span>
+              <span class="cell-val">ζ = 0.86</span>
+            </div>
+            <div class="spring-cell">
+              <span class="cell-lbl">IDLE CUT</span>
+              <span class="cell-val">&gt; 800ms</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dock-section-header border-top">
+          <span class="section-title">SELECTED VECTOR NODE</span>
+          <span class="mono-count" id="selectedVecBadge">VEC 01</span>
+        </div>
+
+        <div class="inspector-group">
+          <div class="inspector-row">
+            <label for="kfCaptionInput">Step Lower-Third Subtitle</label>
+            <input type="text" id="kfCaptionInput" class="pro-input" />
+          </div>
+
+          <div class="inspector-row">
+            <label for="kfHotspotInput">Playable Reticle Label</label>
+            <input type="text" id="kfHotspotInput" class="pro-input mono-input" />
+          </div>
+
+          <div class="inspector-row">
+            <div class="slider-label-row">
+              <label for="kfZoomSlider">Node Focal Zoom</label>
+              <span class="mono-count" id="kfZoomValText">1.65×</span>
+            </div>
+            <input
+              type="range"
+              id="kfZoomSlider"
+              min="1.20"
+              max="2.10"
+              step="0.05"
+              value="1.65"
+              aria-valuetext="1.65x zoom"
+            />
+          </div>
+
+          <div class="node-actions-row">
+            <button type="button" class="btn-tool btn-half" id="btnAddKf">+ Insert Node</button>
+            <button type="button" class="btn-tool btn-half" id="btnDeleteKf">Delete Node</button>
+          </div>
+        </div>
+
+        <div class="dock-section-header border-top">
+          <span class="section-title">GEMINI 3.8 FLASH DIRECTOR</span>
+          <button type="button" class="btn-link-mono" id="btnRedirectAi">Re-Synthesize</button>
+        </div>
+
+        <div class="inspector-group">
+          <label class="field-label" for="viralHookInput">Overlay Hook Copy</label>
+          <input type="text" id="viralHookInput" class="pro-input" value="Ship autonomous AI agents to production in 3 clicks." />
+
+          <div class="director-log-box">
+            <div class="log-header">
+              <span>DIRECTOR TELEMETRY</span>
+              <span>SCHEMA v2</span>
+            </div>
+            <p id="directorInsight">Compressed 11.4s raw capture into 6.0s studio sequence.</p>
+          </div>
+        </div>
+
+        <div class="dock-section-header border-top">
+          <span class="section-title">STUDIO AUDIO &amp; TTS</span>
+          <span class="mono-count" id="ttsModelTag">3.8 FLASH TTS</span>
+        </div>
+
+        <div class="inspector-group">
+          <label class="switch-row" for="audioSfxSwitch">
+            <span>Enable Studio SFX &amp; Voiceover</span>
+            <input id="audioSfxSwitch" type="checkbox" switch checked />
+          </label>
+
+          <label class="switch-row" for="whiteLabelSwitch">
+            <span>Clean Export (Hide Watermark)</span>
+            <input id="whiteLabelSwitch" type="checkbox" switch />
+          </label>
+
+          <div class="inspector-row">
+            <label for="ttsVoiceSelect">Narrator Persona</label>
+            <select id="ttsVoiceSelect" class="pro-select">
+              <option value="Kore">Kore · Studio Launch Narrator</option>
+              <option value="Puck">Puck · Technical Founder</option>
+              <option value="Aoede">Aoede · Crisp Executive</option>
+              <option value="Charon">Charon · Deep Systems Architect</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn-tool btn-full" id="btnSynthesizeTts">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2.5 8V8.01M5.2 5.5V10.5M8 3V13M10.8 5.5V10.5M13.5 7.5V8.5" stroke-linecap="round"/>
+            </svg>
+            <span id="ttsBtnLabel">Synthesize Voiceover Track</span>
+          </button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- BOTTOM MULTI-TRACK NLE TIMELINE -->
+    <section class="nle-timeline" aria-label="Multi-Track Keyframe Timeline">
+      <div class="timeline-ruler-row">
+        <div class="track-label-col">TIMECODE</div>
+        <div class="ruler-track" id="timelineRuler">
+          <span>00:00.0</span>
+          <span>00:01.0</span>
+          <span>00:02.0</span>
+          <span>00:03.0</span>
+          <span>00:04.0</span>
+          <span>00:05.0</span>
+          <span>00:06.0</span>
+        </div>
+      </div>
+
+      <div class="timeline-tracks-wrap" id="timelineTracksWrap">
+        <!-- Playhead Cursor -->
+        <div class="timeline-playhead" id="timelinePlayhead" style="left: 140px;">
+          <div class="playhead-cap"></div>
+        </div>
+
+        <!-- Track 1: DOM Surface & Dead-Air Cuts -->
+        <div class="nle-track-row">
+          <div class="track-label-col">
+            <span class="track-dot dot-emerald"></span>
+            <span>DOM SURFACE</span>
+          </div>
+          <div class="track-lane" id="trackDomLane">
+            <div class="clip-block clip-surface">
+              <span>60Hz Vector Capture · 3 Idle Seams Excised</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Track 2: Camera Spring Zooms -->
+        <div class="nle-track-row">
+          <div class="track-label-col">
+            <span class="track-dot dot-indigo"></span>
+            <span>CAM OPTICS</span>
+          </div>
+          <div class="track-lane" id="trackZoomLane"></div>
+        </div>
+
+        <!-- Track 3: Kinetic Subtitles & Hotspots -->
+        <div class="nle-track-row">
+          <div class="track-label-col">
+            <span class="track-dot dot-amber"></span>
+            <span>HOTSPOTS</span>
+          </div>
+          <div class="track-lane" id="trackCaptionLane"></div>
+        </div>
+
+        <!-- Track 4: Voiceover & Studio SFX -->
+        <div class="nle-track-row">
+          <div class="track-label-col">
+            <span class="track-dot dot-cyan"></span>
+            <span>VOICEOVER &amp; SFX</span>
+          </div>
+          <div class="track-lane" id="trackAudioLane"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL 1: PUBLISH ARTIFACT (Light-Dismiss + Top-Layer Animated) -->
+  <dialog id="shareDialog" closedby="any" aria-labelledby="shareDialogTitle">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-header">
+        <div>
+          <span class="dialog-eyebrow">DISTRIBUTION ARTIFACT</span>
+          <h3 id="shareDialogTitle">Publish Dual-Mode Demo</h3>
+        </div>
+        <button type="submit" class="btn-close" aria-label="Close modal">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="dialog-desc">
+        Recipients can watch the 60fps spring-zoomed reel or switch directly into the interactive DOM sandbox with zero install.
+      </p>
+
+      <div class="viral-metrics-grid">
+        <div class="metric-box">
+          <span class="metric-lbl">HASH PAYLOAD</span>
+          <span class="metric-val" id="metricPayloadBytes">448 B</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-lbl">REMIX RATIO</span>
+          <span class="metric-val" id="metricKFactor">1.50×</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-lbl">HOTSPOT / REMIXES</span>
+          <span class="metric-val" id="metricFunnelStats">38 / 6</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="shareUrlInput">Self-Contained Interactive Player URL (#scraft Hash)</label>
+        <div class="copy-row">
+          <input type="text" id="shareUrlInput" class="pro-input mono-input" readonly />
+          <button type="button" class="btn-primary-pro" id="btnCopyShareUrl">Copy URL</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="markdownBadgeInput">GitHub README / PR Animated SVG Card</label>
+        <div class="copy-row">
+          <input type="text" id="markdownBadgeInput" class="pro-input mono-input" readonly />
+          <button type="button" class="btn-tool" id="btnCopyMarkdown">Copy Markdown</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="embedCodeInput">Open Embed SDK Snippet (Zero-CLS Auto-Mount)</label>
+        <div class="copy-row">
+          <input type="text" id="embedCodeInput" class="pro-input mono-input" readonly />
+          <button type="button" class="btn-tool" id="btnCopyEmbed">Copy SDK</button>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <div class="dialog-actions">
+          <button type="button" class="btn-tool" id="btnExportProjectJson">Save .scraft.json</button>
+          <button type="button" class="btn-tool" id="btnImportProjectJson">Load .scraft.json</button>
+          <input type="file" id="projectFileInput" accept=".json,.scraft.json" hidden />
+          <button type="button" class="btn-tool" id="btnResetFactory" title="Clear localStorage auto-save and restore preset">Reset Draft</button>
+        </div>
+        <div class="dialog-actions">
+          <button type="button" class="btn-primary-pro" id="btnPreviewEmbed">Preview Player</button>
+          <button type="submit" class="btn-tool">Close</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL 2: GEMINI 3.8 FLASH DIRECTOR CONFIG (Light-Dismiss + Top-Layer Animated) -->
+  <dialog id="aiConfigDialog" closedby="any" aria-labelledby="aiDialogTitle">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-header">
+        <div>
+          <span class="dialog-eyebrow">MODEL CONFIGURATION</span>
+          <h3 id="aiDialogTitle">Gemini 3.8 Flash Director</h3>
+        </div>
+        <button type="submit" class="btn-close" aria-label="Close modal">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="dialog-desc">
+        Connect <code>gemini-3.8-flash</code> via the <code>@google/genai</code> Interactions API to synthesize structured camera focal scales, subtitle pacing, and hotspot labels from raw DOM telemetry.
+      </p>
+
+      <div class="field-group">
+        <label class="field-label" for="geminiKeyInput">GEMINI_API_KEY (Session Memory Only)</label>
+        <input type="password" id="geminiKeyInput" class="pro-input mono-input" placeholder="AIzaSy..." autocomplete="off" />
+      </div>
+
+      <div class="dialog-footer">
+        <span class="dialog-tip">Fallback: Local deterministic kinematic solver</span>
+        <div class="dialog-actions">
+          <button type="submit" class="btn-tool">Cancel</button>
+          <button type="button" class="btn-primary-pro" id="btnSaveAiKey">Apply &amp; Direct</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

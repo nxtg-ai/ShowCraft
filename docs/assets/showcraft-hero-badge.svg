@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="360" viewBox="0 0 680 360" fill="none">
+  <style>
+    .font-sans { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace; }
+    .pulse-ring {
+      transform-origin: 495px 248px;
+      animation: pulse 1.8s ease-out infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.85); opacity: 0.95; }
+      100% { transform: scale(1.75); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pulse-ring { animation: none; }
+    }
+  </style>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="680" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#121318"/>
+      <stop offset="50%" stop-color="#08080b"/>
+      <stop offset="100%" stop-color="#181820"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Studio Matte Frame -->
+  <rect width="680" height="360" rx="12" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="679" height="359" rx="11.5" stroke="rgba(255,255,255,0.14)"/>
+
+  <!-- Top Hook Pill -->
+  <rect x="110" y="14" width="460" height="24" rx="4" fill="#09090b" stroke="rgba(255,255,255,0.12)"/>
+  <text x="340" y="30" text-anchor="middle" fill="#e4e4e7" font-size="11" font-weight="500" class="font-sans">Record once in 15s. Export 60fps auto-zoom video + playable sand</text>
+
+  <!-- Floating Desktop Application Window -->
+  <rect x="48" y="48" width="584" height="256" rx="8" fill="#0b0c0e" stroke="rgba(255,255,255,0.14)"/>
+  <rect x="48" y="48" width="584" height="28" rx="8" fill="#121317"/>
+  <line x1="48" y1="76" x2="632" y2="76" stroke="rgba(255,255,255,0.08)"/>
+  <circle cx="64" cy="62" r="4" fill="#3f3f46"/>
+  <circle cx="76" cy="62" r="4" fill="#3f3f46"/>
+  <circle cx="88" cy="62" r="4" fill="#3f3f46"/>
+
+  <!-- URL Bar -->
+  <rect x="220" y="53" width="240" height="18" rx="3" fill="#09090b" stroke="rgba(255,255,255,0.07)"/>
+  <text x="340" y="65" text-anchor="middle" fill="#a1a1aa" font-size="9.5" class="font-mono">nxtg-ai.github.io/ShowCraft</text>
+
+  <!-- Interior Title & Status -->
+  <text x="76" y="104" fill="#f4f4f6" font-size="14" font-weight="600" class="font-sans">Showcraft Studio v2.3 — 60fps NLE + Sandbox</text>
+  <rect x="486" y="90" width="122" height="18" rx="3" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.35)"/>
+  <text x="547" y="102" text-anchor="middle" fill="#34d399" font-size="8.5" font-weight="600" class="font-mono">4 INTERACTIVE STEPS</text>
+
+  <!-- 3 Node Cards -->
+  <rect x="76" y="120" width="168" height="92" rx="6" fill="rgba(99,102,241,0.12)" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="88" y="140" fill="#a1a1aa" font-size="8.5" class="font-mono">NODE 01 · VERIFIED</text>
+  <text x="88" y="164" fill="#f4f4f6" font-size="11" font-weight="600" class="font-mono">gemini-3.8-flash</text>
+  <text x="88" y="196" fill="#a5b4fc" font-size="8.5" class="font-mono">STATE: COMMITTED</text>
+
+  <rect x="256" y="120" width="168" height="92" rx="6" fill="#111216" stroke="rgba(255,255,255,0.08)"/>
+  <text x="268" y="140" fill="#71717a" font-size="8.5" class="font-mono">NODE 02 · GUARDRAIL</text>
+  <text x="268" y="164" fill="#f4f4f6" font-size="11" font-weight="600" class="font-mono">QLC Cap Enforced</text>
+  <text x="268" y="196" fill="#52525b" font-size="8.5" class="font-mono">STATE: READY</text>
+
+  <rect x="436" y="120" width="172" height="92" rx="6" fill="#111216" stroke="rgba(255,255,255,0.08)"/>
+  <text x="448" y="140" fill="#71717a" font-size="8.5" class="font-mono">NODE 03 · MESH</text>
+  <text x="448" y="164" fill="#f4f4f6" font-size="11" font-weight="600" class="font-mono">p99 Latency: 38ms</text>
+  <text x="448" y="196" fill="#52525b" font-size="8.5" class="font-mono">STATE: READY</text>
+
+  <!-- Bottom Action Bar & Pulsing Interactive Hotspot -->
+  <rect x="76" y="226" width="532" height="44" rx="6" fill="#111216" stroke="rgba(255,255,255,0.08)"/>
+  <text x="92" y="252" fill="#a1a1aa" font-size="10" class="font-mono">CLICK TO LAUNCH INTERACTIVE SANDBOX</text>
+  <rect x="412" y="234" width="184" height="28" rx="4" fill="#f4f4f6"/>
+  <text x="504" y="252" text-anchor="middle" fill="#09090b" font-size="10.5" font-weight="600" class="font-sans">Play Interactive Demo →</text>
+
+  <circle cx="495" cy="248" r="18" stroke="#6366f1" stroke-width="2" class="pulse-ring"/>
+  <circle cx="495" cy="248" r="14" fill="rgba(99,102,241,0.28)" stroke="#ffffff" stroke-width="1.5"/>
+
+  <!-- Footer Attribution Pill -->
+  <rect x="215" y="318" width="250" height="26" rx="5" fill="rgba(9,9,11,0.9)" stroke="rgba(99,102,241,0.5)"/>
+  <text x="340" y="335" text-anchor="middle" fill="#f4f4f6" font-size="10.5" font-weight="500" class="font-mono">60FPS REEL + PLAYABLE SANDBOX · SHOWCRAFT</text>
+</svg>
