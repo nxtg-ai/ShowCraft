@@ -1,6 +1,6 @@
 {
   "name": "showcraft-live",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "license": "MIT",
   "description": "Showcraft Live — Open-Core 60fps Auto-Zoom Launch Video & Interactive Sandbox Studio",
   "type": "module",

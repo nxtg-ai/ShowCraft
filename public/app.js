@@ -35,6 +35,7 @@ liveScreenVideo.muted = true;
 liveScreenVideo.playsInline = true;
 const audioEngine = new StudioAudioEngine();
 const AUTOSAVE_STORAGE_KEY = 'showcraft.autosave.v2';
+const PRO_LICENSE_STORAGE_KEY = 'showcraft.pro.license';
 
 // DOM Elements
 const projectFileName = document.getElementById('projectFileName');
@@ -112,15 +113,26 @@ const btnResetFactory = document.getElementById('btnResetFactory');
 // Dialog Elements
 const shareDialog = document.getElementById('shareDialog');
 const aiConfigDialog = document.getElementById('aiConfigDialog');
+const proUpgradeDialog = document.getElementById('proUpgradeDialog');
 const btnOpenShareDialog = document.getElementById('btnOpenShareDialog');
 const btnOpenAiDialog = document.getElementById('btnOpenAiDialog');
+const btnOpenProDialog = document.getElementById('btnOpenProDialog');
+const proStatusBadgeText = document.getElementById('proStatusBadgeText');
 const btnExportVideo = document.getElementById('btnExportVideo');
 const shareUrlInput = document.getElementById('shareUrlInput');
+const shortSlugInput = document.getElementById('shortSlugInput');
+const btnMintShortLink = document.getElementById('btnMintShortLink');
 const embedCodeInput = document.getElementById('embedCodeInput');
 const btnCopyShareUrl = document.getElementById('btnCopyShareUrl');
 const btnCopyEmbed = document.getElementById('btnCopyEmbed');
 const geminiKeyInput = document.getElementById('geminiKeyInput');
 const btnSaveAiKey = document.getElementById('btnSaveAiKey');
+const proEmailInput = document.getElementById('proEmailInput');
+const proPlanSelect = document.getElementById('proPlanSelect');
+const btnCheckoutPro = document.getElementById('btnCheckoutPro');
+const proLicenseInput = document.getElementById('proLicenseInput');
+const btnActivateProLicense = document.getElementById('btnActivateProLicense');
+const proModalFeedback = document.getElementById('proModalFeedback');
 
 const renderer = new StudioCanvasRenderer(cinemaCanvas);
 
@@ -948,12 +960,176 @@ if (audioSfxSwitch) {
   });
 }
 
+function isProUnlocked() {
+  try {
+    const key = localStorage.getItem(PRO_LICENSE_STORAGE_KEY) || '';
+    return key.startsWith('SCRAFT-PRO-');
+  } catch {
+    return false;
+  }
+}
+
+function updateProBadgeUI() {
+  const unlocked = isProUnlocked();
+  if (proStatusBadgeText) {
+    proStatusBadgeText.textContent = unlocked ? 'Cloud Pro Active' : 'Cloud Pro';
+  }
+  if (proLicenseInput && unlocked) {
+    try {
+      proLicenseInput.value = localStorage.getItem(PRO_LICENSE_STORAGE_KEY) || '';
+    } catch {}
+  }
+}
+
+if (btnOpenProDialog && proUpgradeDialog) {
+  btnOpenProDialog.addEventListener('click', () => {
+    updateProBadgeUI();
+    proUpgradeDialog.showModal();
+  });
+}
+
 if (whiteLabelSwitch) {
   whiteLabelSwitch.addEventListener('change', () => {
+    if (whiteLabelSwitch.checked && !isProUnlocked()) {
+      whiteLabelSwitch.checked = false;
+      if (viralBadgeBtn) viralBadgeBtn.hidden = false;
+      if (proUpgradeDialog) {
+        if (proModalFeedback) {
+          proModalFeedback.textContent = 'White-label watermark removal requires Showcraft Cloud Pro.';
+        }
+        proUpgradeDialog.showModal();
+      }
+      return;
+    }
     if (viralBadgeBtn) {
       viralBadgeBtn.hidden = whiteLabelSwitch.checked;
     }
     saveDraftToLocalStorage();
+  });
+}
+
+if (btnMintShortLink) {
+  btnMintShortLink.addEventListener('click', async () => {
+    if (!isProUnlocked()) {
+      closeTopLayer(shareDialog);
+      if (proUpgradeDialog) {
+        if (proModalFeedback) {
+          proModalFeedback.textContent = 'Custom /d/:slug short permalinks require Showcraft Cloud Pro.';
+        }
+        proUpgradeDialog.showModal();
+      }
+      return;
+    }
+    const { hashToken } = encodeArtifactState(currentFlow, {
+      durationMs,
+      backdrop: backdropSelect.value,
+      maxZoom: parseFloat(zoomSelect.value) || 1.65,
+    });
+    const desiredSlug = (shortSlugInput?.value || currentFlow.id || 'demo').trim();
+    btnMintShortLink.textContent = 'Minting...';
+    try {
+      const res = await fetch('/api/shortlink', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: desiredSlug,
+          scraftToken: hashToken,
+          title: currentFlow.title,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const shortUrl = `${window.location.origin}${data.shortPath}`;
+        shareUrlInput.value = shortUrl;
+        if (shortSlugInput) shortSlugInput.value = data.slug;
+        btnMintShortLink.textContent = 'Minted!';
+      } else {
+        throw new Error('Static host fallback');
+      }
+    } catch {
+      const cleanSlug = desiredSlug.toLowerCase().replace(/[^a-z0-9-]/g, '') || 'launch';
+      const basePath =
+        window.location.origin +
+        window.location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '');
+      shareUrlInput.value = `${basePath}/?d=${cleanSlug}&embed=1&mode=playable#scraft=${hashToken}`;
+      btnMintShortLink.textContent = 'Minted!';
+    } finally {
+      setTimeout(() => {
+        btnMintShortLink.textContent = 'Mint Short Link';
+      }, 1800);
+    }
+  });
+}
+
+if (btnCheckoutPro) {
+  btnCheckoutPro.addEventListener('click', async () => {
+    const email = (proEmailInput?.value || '').trim();
+    if (!email || !email.includes('@')) {
+      if (proModalFeedback) {
+        proModalFeedback.textContent = 'Please enter a valid work email to generate your Pro key.';
+      }
+      proEmailInput?.focus();
+      return;
+    }
+    const plan = proPlanSelect?.value || 'pro_19';
+    btnCheckoutPro.textContent = 'Provisioning...';
+    let generatedKey = `SCRAFT-PRO-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    let checkoutUrl = null;
+    try {
+      const res = await fetch('/api/pro-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, plan }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.trialLicenseKey) generatedKey = data.trialLicenseKey;
+        if (data.checkoutUrl) checkoutUrl = data.checkoutUrl;
+      }
+    } catch {}
+
+    try {
+      localStorage.setItem(PRO_LICENSE_STORAGE_KEY, generatedKey);
+    } catch {}
+    if (proLicenseInput) proLicenseInput.value = generatedKey;
+    if (whiteLabelSwitch) {
+      whiteLabelSwitch.checked = true;
+      if (viralBadgeBtn) viralBadgeBtn.hidden = true;
+    }
+    updateProBadgeUI();
+    saveDraftToLocalStorage();
+    if (proModalFeedback) {
+      proModalFeedback.textContent = `Activated ${generatedKey} for ${email}. White-label & short links unlocked!`;
+    }
+    btnCheckoutPro.textContent = 'Pro Unlocked';
+    if (checkoutUrl) {
+      window.open(checkoutUrl, '_blank', 'noopener');
+    }
+  });
+}
+
+if (btnActivateProLicense) {
+  btnActivateProLicense.addEventListener('click', () => {
+    const candidate = (proLicenseInput?.value || '').trim().toUpperCase();
+    if (!candidate.startsWith('SCRAFT-PRO-') || candidate.length < 14) {
+      if (proModalFeedback) {
+        proModalFeedback.textContent = 'Invalid key format. Expected SCRAFT-PRO-XXXXXX.';
+      }
+      return;
+    }
+    try {
+      localStorage.setItem(PRO_LICENSE_STORAGE_KEY, candidate);
+    } catch {}
+    if (whiteLabelSwitch) {
+      whiteLabelSwitch.checked = true;
+      if (viralBadgeBtn) viralBadgeBtn.hidden = true;
+    }
+    updateProBadgeUI();
+    saveDraftToLocalStorage();
+    if (proModalFeedback) {
+      proModalFeedback.textContent = `License ${candidate} verified! Pro features unlocked.`;
+    }
+    setTimeout(() => closeTopLayer(proUpgradeDialog), 900);
   });
 }
 
@@ -1024,8 +1200,9 @@ function loadDraftFromLocalStorage() {
       aspectRatioSelect.dispatchEvent(new Event('change'));
     }
     if (whiteLabelSwitch) {
-      whiteLabelSwitch.checked = Boolean(data.whiteLabel);
-      if (viralBadgeBtn) viralBadgeBtn.hidden = Boolean(data.whiteLabel);
+      const canHideWatermark = Boolean(data.whiteLabel) && isProUnlocked();
+      whiteLabelSwitch.checked = canHideWatermark;
+      if (viralBadgeBtn) viralBadgeBtn.hidden = canHideWatermark;
     }
     directorInsight.textContent = `Restored local studio draft (${currentFlow.keyframes.length} vectors).`;
     return true;
@@ -1217,6 +1394,7 @@ function hydrateFromHashAndQuery() {
 
 function init() {
   setupDialogFallbacks();
+  updateProBadgeUI();
   hydrateFromHashAndQuery();
   window.addEventListener('hashchange', hydrateFromHashAndQuery);
   requestAnimationFrame(tick);

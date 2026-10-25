@@ -4,6 +4,13 @@ All notable changes to **Showcraft** are documented in this file.
 
 ---
 
+## [3.0.0] — 2026-10-25
+### Added
+- **Showcraft Cloud Pro & License Activation (`#proUpgradeDialog`, `/api/pro-checkout`):** Added Cloud Pro tier (`$19/mo` Pro · `$79/mo` Teams) with license key verification (`SCRAFT-PRO-XXXXXX`) unlocking watermark-free white-label exports and custom short permalinks.
+- **Cloud Short Permalinks (`/api/shortlink`, `/d/:slug`):** Mint clean `/d/:slug` vanity URLs that redirect directly into the interactive playable sandbox.
+
+---
+
 ## [2.3.0] — 2026-10-25
 ### Added
 - **Direct-Manipulation Timeline & Canvas Focal Editing:** Drag keyframe clips horizontally across the `CAM OPTICS` and `HOTSPOTS` tracks to re-time beats at 60fps, or click/drag on the canvas while paused to reposition the active step's `(normX, normY)` focal anchor.

@@ -23,8 +23,13 @@ const viralTelemetry = {
   hotspot_interactions: 38,
   studio_remixes: 6,
   exports_webm: 4,
+  pro_checkouts: 0,
   lastUpdated: new Date().toISOString(),
 };
+
+// Cloud Short-Link Registry (/d/:slug -> { scraftToken, title, createdAt, clicks })
+const shortLinksMap = new Map();
+const proWaitlistLedger = [];
 
 function escapeXml(str = '') {
   return String(str)
@@ -262,6 +267,87 @@ const server = http.createServer(async (req, res) => {
       );
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ...viralTelemetry, kFactor }));
+      return;
+    }
+
+    // Cloud Short-Link Minting (POST /api/shortlink)
+    if (req.method === 'POST' && url.pathname === '/api/shortlink') {
+      let body = '';
+      for await (const chunk of req) body += chunk;
+      const payload = JSON.parse(body || '{}');
+      const scraftToken = String(payload.scraftToken || '').trim();
+      if (!scraftToken) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'MISSING_TOKEN' }));
+        return;
+      }
+      const rawSlug = String(payload.slug || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '')
+        .slice(0, 28);
+      const slug = rawSlug || Math.random().toString(36).slice(2, 8);
+      shortLinksMap.set(slug, {
+        slug,
+        scraftToken,
+        title: String(payload.title || 'Showcraft Demo').slice(0, 64),
+        createdAt: new Date().toISOString(),
+        clicks: 0,
+      });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          ok: true,
+          slug,
+          shortPath: `/d/${slug}`,
+          createdAt: new Date().toISOString(),
+        })
+      );
+      return;
+    }
+
+    // Cloud Short-Link Resolver (GET /d/:slug)
+    if (req.method === 'GET' && url.pathname.startsWith('/d/')) {
+      const slug = url.pathname.slice('/d/'.length).trim();
+      const record = shortLinksMap.get(slug);
+      if (record) {
+        record.clicks += 1;
+        viralTelemetry.impressions += 1;
+        viralTelemetry.lastUpdated = new Date().toISOString();
+        res.writeHead(302, {
+          Location: `/?embed=1&mode=playable#scraft=${record.scraftToken}`,
+          'Cache-Control': 'no-cache',
+        });
+        res.end();
+        return;
+      }
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Showcraft short link not found or expired.');
+      return;
+    }
+
+    // Cloud Pro Checkout & License Activation Endpoint (POST /api/pro-checkout)
+    if (req.method === 'POST' && url.pathname === '/api/pro-checkout') {
+      let body = '';
+      for await (const chunk of req) body += chunk;
+      const payload = JSON.parse(body || '{}');
+      viralTelemetry.pro_checkouts += 1;
+      viralTelemetry.lastUpdated = new Date().toISOString();
+      const entry = {
+        email: String(payload.email || '').trim(),
+        plan: String(payload.plan || 'pro_19').trim(),
+        timestamp: new Date().toISOString(),
+      };
+      proWaitlistLedger.push(entry);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          ok: true,
+          plan: entry.plan,
+          checkoutUrl: process.env.STRIPE_CHECKOUT_URL || null,
+          trialLicenseKey: `SCRAFT-PRO-${Math.random().toString(36).slice(2, 8).toUpperCase()}`,
+          timestamp: entry.timestamp,
+        })
+      );
       return;
     }
 

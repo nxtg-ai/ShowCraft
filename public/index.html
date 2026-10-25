@@ -56,6 +56,13 @@
     </div>
 
     <div class="menubar-right">
+      <button type="button" class="btn-tool studio-only" id="btnOpenProDialog" title="Showcraft Cloud Pro — Hosted Short-Links, Managed AI &amp; White-Label">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 1.5L10.2 5.8L14.8 6.5L11.4 9.8L12.2 14.5L8 12.2L3.8 14.5L4.6 9.8L1.2 6.5L5.8 5.8L8 1.5Z" stroke-linejoin="round"/>
+        </svg>
+        <span id="proStatusBadgeText">Cloud Pro</span>
+      </button>
+
       <button type="button" class="btn-tool studio-only" id="btnOpenAiDialog" title="Configure Gemini 3.8 Flash AI Director">
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M8 1.75V4.25M8 11.75V14.25M1.75 8H4.25M11.75 8H14.25M3.58 3.58L5.35 5.35M10.65 10.65L12.42 12.42M12.42 3.58L10.65 5.35M5.35 10.65L3.58 12.42" stroke-linecap="round"/>
@@ -476,6 +483,14 @@
       </div>
 
       <div class="field-group">
+        <label class="field-label" for="shortSlugInput">Cloud Short Permalink (/d/:slug · Pro &amp; Edge)</label>
+        <div class="copy-row">
+          <input type="text" id="shortSlugInput" class="pro-input mono-input" placeholder="custom-launch-slug" />
+          <button type="button" class="btn-tool" id="btnMintShortLink">Mint Short Link</button>
+        </div>
+      </div>
+
+      <div class="field-group">
         <label class="field-label" for="markdownBadgeInput">GitHub README / PR Animated SVG Card</label>
         <div class="copy-row">
           <input type="text" id="markdownBadgeInput" class="pro-input mono-input" readonly />
@@ -535,6 +550,81 @@
         <div class="dialog-actions">
           <button type="submit" class="btn-tool">Cancel</button>
           <button type="button" class="btn-primary-pro" id="btnSaveAiKey">Apply &amp; Direct</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL 3: SHOWCRAFT CLOUD PRO UPGRADE & LICENSE GATE (Light-Dismiss + Top-Layer Animated) -->
+  <dialog id="proUpgradeDialog" closedby="any" aria-labelledby="proDialogTitle">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-header">
+        <div>
+          <span class="dialog-eyebrow">SHOWCRAFT CLOUD &amp; WHITE-LABEL</span>
+          <h3 id="proDialogTitle">Upgrade to Showcraft Cloud Pro</h3>
+        </div>
+        <button type="submit" class="btn-close" aria-label="Close modal">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="dialog-desc">
+        The core Showcraft studio is free and open-source forever. Upgrade to <strong>Cloud Pro</strong> for white-label embeds, hosted short-links, managed Gemini 3.8 AI, and conversion analytics.
+      </p>
+
+      <div class="pro-tiers-grid">
+        <div class="pro-tier-card">
+          <div class="tier-head">
+            <span class="tier-name">Cloud Pro</span>
+            <span class="tier-price">$19<span>/mo</span></span>
+          </div>
+          <ul class="tier-features">
+            <li>Remove "Interactive · Showcraft" watermark</li>
+            <li>Hosted short permalinks (<code>/d/custom-slug</code>)</li>
+            <li>Zero-config managed Gemini 3.8 Flash &amp; TTS</li>
+            <li>Step-by-step sandbox drop-off telemetry</li>
+          </ul>
+        </div>
+        <div class="pro-tier-card">
+          <div class="tier-head">
+            <span class="tier-name">Teams &amp; Growth</span>
+            <span class="tier-price">$79<span>/mo</span></span>
+          </div>
+          <ul class="tier-features">
+            <li>Up to 5 creator seats &amp; shared brand kits</li>
+            <li>Custom CNAME domain (<code>demos.yourco.com</code>)</li>
+            <li>Sandbox lead-capture gate &amp; Slack webhooks</li>
+            <li>Priority 4K 60fps cloud rendering</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="proEmailInput">Start Instant Pro Trial &amp; Checkout (Enter Work Email)</label>
+        <div class="copy-row">
+          <input type="email" id="proEmailInput" class="pro-input" placeholder="founder@company.com" autocomplete="email" />
+          <select id="proPlanSelect" class="pro-select" style="width: 135px; flex-shrink: 0;">
+            <option value="pro_19">Pro ($19/mo)</option>
+            <option value="teams_79">Teams ($79/mo)</option>
+          </select>
+          <button type="button" class="btn-primary-pro" id="btnCheckoutPro">Unlock Pro</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="proLicenseInput">Already Have a Pro License Key?</label>
+        <div class="copy-row">
+          <input type="text" id="proLicenseInput" class="pro-input mono-input" placeholder="SCRAFT-PRO-XXXXXX" />
+          <button type="button" class="btn-tool" id="btnActivateProLicense">Activate Key</button>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <span class="dialog-tip" id="proModalFeedback">Includes 14-day instant trial key on signup</span>
+        <div class="dialog-actions">
+          <button type="submit" class="btn-tool">Continue with Free OSS</button>
         </div>
       </div>
     </form>

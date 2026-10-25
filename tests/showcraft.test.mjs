@@ -101,3 +101,40 @@ test('4. HTTP Server routes (/api/badge.svg, /api/telemetry, /embed-sdk.js) resp
   const sdkText = await sdkRes.text();
   assert.ok(sdkText.includes('mountShowcraftEmbeds'));
 });
+
+test('5. Cloud Pro endpoints (/api/shortlink, /d/:slug, /api/pro-checkout) mint & resolve cleanly', async () => {
+  const { hashToken } = encodeArtifactState(PRESET_FLOWS['ai-agent'], {
+    durationMs: 6000,
+    backdrop: 'obsidian',
+    maxZoom: 1.65,
+  });
+
+  const shortRes = await fetch(`${BASE_URL}/api/shortlink`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      slug: 'vanguard-launch',
+      scraftToken: hashToken,
+      title: 'Vanguard Edge Demo',
+    }),
+  });
+  assert.equal(shortRes.status, 200);
+  const shortJson = await shortRes.json();
+  assert.equal(shortJson.ok, true);
+  assert.equal(shortJson.shortPath, '/d/vanguard-launch');
+
+  const redirectRes = await fetch(`${BASE_URL}/d/vanguard-launch`, { redirect: 'manual' });
+  assert.equal(redirectRes.status, 302);
+  assert.ok((redirectRes.headers.get('location') || '').includes(hashToken));
+
+  const proRes = await fetch(`${BASE_URL}/api/pro-checkout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'founder@vanguard.dev', plan: 'pro_19' }),
+  });
+  assert.equal(proRes.status, 200);
+  const proJson = await proRes.json();
+  assert.equal(proJson.ok, true);
+  assert.match(proJson.trialLicenseKey, /^SCRAFT-PRO-/);
+});
+
